@@ -1,0 +1,35 @@
+# Build output
+build/
+sdkconfig
+sdkconfig.old
+read-partition-table.bin
+.cache/
+
+# Managed components — downloaded automatically, not committed
+managed_components/
+dependencies.lock
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# VSCode
+.vscode/
+
+# Python cache
+__pycache__/
+*.pyc
+*.pyo
+
+# esptool temp files
+*.log
+
+# Sensitive — never commit original firmware backup
+shelly-1-gen4-original-*.bin
+
+# Release binaries — these go in GitHub Releases
+automatous-shelly-1-gen4-*.bin
+
+# IDF component manager
+idf_component_manager.yml
+.idf_component_manager/
