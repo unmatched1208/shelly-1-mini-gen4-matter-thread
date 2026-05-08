@@ -7,7 +7,7 @@
 
 > **⚠️ Disclaimer.** Flashing third-party firmware modifies your device and may void your warranty. Incorrect flashing can brick your device. Always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems.
 
-Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen 4 ships with a thread radio - why not use firmware to unlock and use it?**
+Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen 4 ships with a thread radio - why not flash firmware that unlocks and uses it?**
 
 > ⚠️ Uses ESP-Matter SDK test credentials (not VID/PID-certified). Functional for personal use; not suitable for resale as a certified Matter product.
 
@@ -51,13 +51,13 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - ✅ Thread Router mode — extends your Thread mesh network for other devices
 - ✅ Factory reset via long press (onboard relay button)
 
-> **Note:** The current version offered is the `On/Off Light` firmware variant. The device will appear as a light bulb icon in your Matter over Thread smart home ecosystem. Functionally the latch style relay behaves identically regardless of icon and can be used to turn other devices on or off. A `Switch` firmware variant (outlet/switch/fan/etc icon) with momentary press options is on the roadmap.
+> **Note:** The current firmware version offered is the `On/Off Light` variant. The device will appear as a light bulb icon in your Matter over Thread smart home ecosystem. Functionally the latch style relay behaves identically regardless of icon and can be used to turn devices on or off. A `Switch` firmware variant (outlet/switch/fan/etc icon) with momentary press options is on the roadmap.
 
 ---
 
 ## Compatible Hubs
 
-> **Requires a Thread Border Router.** Built into iPhone 15 Pro+, HomePod mini, HomePod 2nd gen, Apple TV 4K (3rd gen), and Google Nest Hub 2nd gen.
+> **Requires a Thread Border Router.** A Thread Border Router is required for any Matter-over-Thread device. See the table below for tested and supported options.
 
 | Hub | Thread Border Router | Tested |
 |-----|---------------------|--------|
@@ -78,8 +78,9 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - CP2102 USB-UART adapter
 - 1.27mm 7-pin to 2.54mm Dupont custom cable or adapter board [(see pinout)](#cp2102-to-shelly-wiring)
 - Chrome, Edge, or any Chromium-based browser (for Web Serial) or esptool via CLI
+- (Optional) A separate serial monitor for viewing boot logs after flashing — see [Verify the firmware is running](#6-verify-the-firmware-is-running)
 
-> Solid core Cat 5e / 6 ethernet wires should fit into the female square holes on the Shelly if you don't want to custom make an adapter or solder to flash - although much harder and finicky to manage. I purchased a small adapter board and soldered both 1.27mm and 2.54mm pins to it, as pictured below.
+> Solid core Cat 5e / 6 ethernet wires should fit into the female square holes on the Shelly if you don't want to custom make an adapter or solder to flash - although much harder and finicky to manage. I purchased a small adapter board and soldered both 1.27mm and 2.54mm pins to it and utilized Dupont wires, as pictured below.
 
 #### CP2102 to Shelly Wiring
 
@@ -139,12 +140,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 2. Open [ESPConnect](https://thelastoutpostworkshop.github.io/microcontroller_devkit/espconnect/) in your browser.
 3. Click **Connect** and select your USB-UART serial port from the browser dialog.
 4. Set baud rate to **115200**. Slower than the default, but more reliable for the long backup read.
-5. ESPConnect will display chip info confirming the ESP32-C6 is detected. If you see "Failed to connect" or no chip info, the Shelly is not in flash mode — recheck the GPIO0–GND bridge and re-power the device.
-
-#### 2. Find your device's MAC address
-
-1. In the left navigation, click **Device Info**.
-2. Note the MAC address shown — you'll use this to label your backup file. This makes it possible to restore the correct stock firmware to the correct physical device later.
+5. ESPConnect will display chip info confirming the ESP32-C6 is detected, including the device's **MAC address** — note this down, you'll use it to label your backup file. If you see "Failed to connect" or no chip info, the Shelly is not in flash mode — recheck the GPIO0–GND bridge and re-power the device.
 
 #### 3. Back up the original Shelly firmware
 
@@ -168,18 +164,30 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 #### 5. Boot the new firmware
 
 1. Disconnect from ESPConnect (click **Disconnect** or close the tab).
-2. Remove the GPIO0 ↔ GND bridge.
+2. **Remove the GPIO0 ↔ GND bridge.** This is critical — if GPIO0 is still bridged to GND at the next power-up, the Shelly will boot back into flash mode instead of running your firmware.
 3. Power-cycle the Shelly: disconnect the 3.3V line, wait two seconds, reconnect.
-4. The Shelly is now running the Automatous firmware and is in BLE commissioning mode.
+4. The Shelly is now running the Automatous firmware and is in BLE commissioning mode, ready to be added to your smart home ecosystem.
 
 #### 6. Verify the firmware is running
 
-1. Reopen ESPConnect (115200 baud).
-2. Click **Serial Monitor** in the left navigation, then **Connect** and **Start**.
-3. You should see boot logs followed by `Commissioning Window Opened`. This confirms Matter is initialized and the device is advertising for commissioning.
-4. Leave the USB-UART connected — you can commission the device now while it's still on the bench. See the [Commissioning](#commissioning) section.
+After power-cycling, the Shelly is running your firmware and advertising for Matter commissioning over BLE. You can verify it's working in either of two ways:
+
+**Easiest: try to add it from your smart home app.** Open Apple Home, Google Home, Alexa, or Home Assistant and start the "add device" flow. If the Shelly appears as a discoverable Matter device, the firmware is running correctly. Proceed to [Commissioning](#commissioning).
+
+**For developers / troubleshooting:** ESPConnect requires flash mode and cannot show normal application serial output easily from my experience with this project. Use a separate serial monitor instead:
+
+- **macOS / Linux CLI:** `screen /dev/cu.usbserial-XXXX 115200` (replace with your actual port)
+- **macOS GUI:** [Serial](https://serial.app/) or [CoolTerm](https://freeware.the-meiers.org/)
+- **Windows:** [Tera Term](https://teratermproject.github.io/) or PuTTY at 115200 baud
+- **VS Code:** the Serial Monitor extension
+
+You should see boot logs followed by `Commissioning Window Opened`. This confirms Matter is initialized and the device is advertising.
+
+> ⚠️ **Important:** With your firmware running, do not bridge GPIO0 to GND again unless you want to re-enter flash mode. The USB-UART 3.3V line can stay connected for power and serial monitoring during commissioning — just leave Pin 6 (GPIO0) disconnected.
 
 #### Restoring stock firmware
+
+> ✅ **Stock restore is verified working** — your Shelly will create its `shelly-XXXXXX` setup AP, pair with the Shelly app, and behave identically to a factory unit.
 
 If you want to revert to the original Shelly firmware:
 
@@ -394,6 +402,6 @@ I built this because I needed lower-power smart home devices in my Sprinter van 
 
 This firmware was created from inside an old Mercedes Sprinter T1N named Mabel, parked somewhere in the USA.
 
-I put many sleepless nights obsessing about Thread support that kick started me into writing custom firmware and testing using ESP-IDF, ESP-Matter, and ESPHome examples — figuring out custom partition offsets, GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
+I put many sleepless nights obsessing about Thread support that kickstarted me into writing custom firmware and testing using ESP-IDF, ESP-Matter, and ESPHome examples — figuring out Shelly's custom partition offsets, GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
 
 If it saved you the same headache, consider leaving a ⭐ on the repo — it helps the project show up in GitHub search and signals to other Shelly 1 Gen 4 owners that this firmware exists and works.
