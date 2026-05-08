@@ -9,6 +9,10 @@
 
 Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen 4 ships with a thread radio - why not flash firmware that unlocks and uses it?**
 
+> **Note:** This release implements the Matter `On/Off Light` device type with **latching relay behavior** — the relay holds whatever state you set (on or off) until you change it again. The Shelly will appear as a light bulb in your smart home app, but the relay can switch any compatible load.
+>
+> A `Switch` variant with **momentary press** support (relay closes briefly, then releases) is planned for a future release. If your application needs momentary behavior — garage doors, doorbells, gates, pulse-activated devices — wait for that release.
+
 > ⚠️ Uses ESP-Matter SDK test credentials (not VID/PID-certified). Functional for personal use; not suitable for resale as a certified Matter product.
 
 ---
@@ -33,9 +37,9 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
  
 **Have a [Thread Border Router](#compatible-hubs), USB-UART adapter and 1.27mm to 2.54mm adapter? Flash and go.**
 
-1. [Download the latest release](../../releases/latest) of the firmware.
+1. [Download the latest release](../../releases/latest) — grab the `automatous-shelly1gen4-light-vX.Y.Z.bin` file from the assets.
 2. [Enter flash mode](#enter-flash-mode) on your Shelly.
-3. [Back up your original firmware](#3-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](#flash-with-espconnect).
+3. [Back up your original firmware](#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](#flash-with-espconnect).
 4. [Commission](#commissioning) with your smart home app.
 
 ---
@@ -51,7 +55,9 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - ✅ Thread Router mode — extends your Thread mesh network for other devices
 - ✅ Factory reset via long press (onboard relay button)
 
-> **Note:** The current firmware version offered is the `On/Off Light` variant. The device will appear as a light bulb icon in your Matter over Thread smart home ecosystem. Functionally the latch style relay behaves identically regardless of icon and can be used to turn devices on or off. A `Switch` firmware variant (outlet/switch/fan/etc icon) with momentary press options is on the roadmap.
+> **Note:** The current release is the `On/Off Light` Matter device type with latching relay behavior. The device will appear as a light bulb icon in your smart home app, but the relay can switch any load that doesn't require momentary pulse activation.
+>
+> A `Switch` variant supporting momentary press is on the roadmap. Until then, this firmware is best suited for lights, fans, outlets, and other "set and hold" loads. It is NOT suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure.
 
 ---
 
@@ -78,7 +84,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - CP2102 USB-UART adapter
 - 1.27mm 7-pin to 2.54mm Dupont custom cable or adapter board [(see pinout)](#cp2102-to-shelly-wiring)
 - Chrome, Edge, or any Chromium-based browser (for Web Serial) or esptool via CLI
-- (Optional) A separate serial monitor for viewing boot logs after flashing — see [Verify the firmware is running](#6-verify-the-firmware-is-running)
+- (Optional) A separate serial monitor for viewing boot logs after flashing — see [Verify the firmware is running](#5-verify-the-firmware-is-running)
 
 > Solid core Cat 5e / 6 ethernet wires should fit into the female square holes on the Shelly if you don't want to custom make an adapter or solder to flash - although much harder and finicky to manage. I purchased a small adapter board and soldered both 1.27mm and 2.54mm pins to it and utilized Dupont wires, as pictured below.
 
@@ -142,7 +148,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 4. Set baud rate to **115200**. Slower than the default, but more reliable for the long backup read.
 5. ESPConnect will display chip info confirming the ESP32-C6 is detected, including the device's **MAC address** — note this down, you'll use it to label your backup file. If you see "Failed to connect" or no chip info, the Shelly is not in flash mode — recheck the GPIO0–GND bridge and re-power the device.
 
-#### 3. Back up the original Shelly firmware
+#### 2. Back up the original Shelly firmware
 
 > This step is essential. The backup is the only way to restore your device to its factory state. **Do not skip it**.
 
@@ -153,7 +159,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 5. **Verify the file size is approximately 8 MB (8,388,608 bytes).** A smaller file means the read was incomplete or interrupted; redo the backup before proceeding.
 6. Store the backup somewhere safe. If you are flashing multiple Shellies, keep each MAC-labeled backup separate — they should not be interchanged.
 
-#### 4. Flash the Automatous firmware
+#### 3. Flash the Automatous firmware
 
 1. Still in **Flash Tools**, click **Flash Firmware**.
 2. Select the latest release `.bin` from your downloads.
@@ -161,14 +167,14 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 4. Check **Erase entire flash before writing**.
 5. Click **Flash** and wait for the operation to complete (1–2 minutes). ESPConnect shows a progress bar and a success message when done.
 
-#### 5. Boot the new firmware
+#### 4. Boot the new firmware
 
 1. Disconnect from ESPConnect (click **Disconnect** or close the tab).
 2. **Remove the GPIO0 ↔ GND bridge.** This is critical — if GPIO0 is still bridged to GND at the next power-up, the Shelly will boot back into flash mode instead of running your firmware.
 3. Power-cycle the Shelly: disconnect the 3.3V line, wait two seconds, reconnect.
 4. The Shelly is now running the Automatous firmware and is in BLE commissioning mode, ready to be added to your smart home ecosystem.
 
-#### 6. Verify the firmware is running
+#### 5. Verify the firmware is running
 
 After power-cycling, the Shelly is running your firmware and advertising for Matter commissioning over BLE. You can verify it's working in either of two ways:
 
