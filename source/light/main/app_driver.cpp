@@ -173,6 +173,10 @@ app_driver_handle_t app_driver_light_init()
     gpio_set_level(RELAY_GPIO, 0);
 
     // Initialize status LED GPIO — inverted logic
+    // Status LED (GPIO0) — NOT FUNCTIONAL in v1.0, tracked in roadmap.
+    // GPIO0 does not respond to gpio_set_level in current configuration.
+    // Suspect sdkconfig flag conflict; needs investigation.
+    // GPIO config left in place to preserve pin reservation for v1.1 fix.
     gpio_config_t led_cfg = {
         .pin_bit_mask = (1ULL << STATUS_LED_GPIO),
         .mode = GPIO_MODE_OUTPUT,
@@ -197,7 +201,7 @@ app_driver_handle_t app_driver_light_init()
             app_driver_temp_check();
             vTaskDelay(pdMS_TO_TICKS(2000));
         }
-    }, "ntc_monitor", 2048, NULL, 5, NULL);
+    }, "temp_monitor", 2048, NULL, 5, NULL);
 
     // Initialize external switch input GPIO10
     // NOTE: GPIO_PULLUP_DISABLE required — Shelly PCB has external pull resistor on GPIO10.
