@@ -188,9 +188,8 @@ After power-cycling, the Shelly is running your firmware and advertising for Mat
 
 **For developers / troubleshooting:** ESPConnect requires flash mode and cannot show normal application serial output easily from my experience with this project. Use a separate serial monitor instead:
 
-- **macOS / Linux CLI:** `screen /dev/cu.usbserial-XXXX 115200` (replace with your actual port)
-- **macOS GUI:** [Serial](https://serial.app/) or [CoolTerm](https://freeware.the-meiers.org/)
-- **Windows:** [Tera Term](https://teratermproject.github.io/) or PuTTY at 115200 baud
+- **macOS / Linux CLI:** `screen /dev/cu.usbserial-XXXX 115200` or `idf.py -p /dev/cu.usbserial-XXXX monitor` if you have ESP-IDF installed (replace with your actual port)
+- **Windows:** [PuTTY](https://putty.org/index.html) configured for Serial at 115200 baud
 - **VS Code:** the Serial Monitor extension
 
 You should see boot logs followed by `Commissioning Window Opened`. This confirms Matter is initialized and the device is advertising.
