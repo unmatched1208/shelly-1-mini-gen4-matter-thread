@@ -9,9 +9,9 @@
 
 Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen 4 ships with a thread radio - why not flash firmware that unlocks and uses it?**
 
-> **Note:** This release implements the Matter `On/Off Light` device type with **latching relay behavior** — the relay holds whatever state you set (on or off) until you change it again. The Shelly will appear as a light bulb in your smart home app, but the relay can switch any compatible load.
+> This release is the **Light variant** — Matter `On/Off Light` device type with **latching relay behavior**. The relay holds whatever state you set (on or off) until you change it again. The Shelly appears as a light bulb icon in your smart home app, and the relay can switch any "set and hold" load.
 >
-> A `Switch` variant with **momentary press** support (relay closes briefly, then releases) is planned for a future release. If your application needs momentary behavior — garage doors, doorbells, gates, pulse-activated devices — wait for that release.
+> A future **Switch variant** will add **momentary relay pulse** behavior for applications that expect a brief contact closure — garage door openers, doorbells, gates, and similar pulse-activated devices. Variants are separate firmware builds because Matter device types are declared at compile time and cannot be changed in the smart home app after commissioning.
 
 > ⚠️ Uses ESP-Matter SDK test credentials (not VID/PID-certified). Functional for personal use; not suitable for resale as a certified Matter product.
 
@@ -55,9 +55,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - ✅ Thread Router mode — extends your Thread mesh network for other devices
 - ✅ Factory reset via long press (onboard relay button)
 
-> **Note:** The current release is the `On/Off Light` Matter device type with latching relay behavior. The device will appear as a light bulb icon in your smart home app, but the relay can switch any load that doesn't require momentary pulse activation.
->
-> A `Switch` variant supporting momentary press is on the roadmap. Until then, this firmware is best suited for lights, fans, outlets, and other "set and hold" loads. It is NOT suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure.
+> **Note:** This firmware is best suited for lights, fans, outlets, heaters, and other "set and hold" loads. It is **not** suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure — see the [variant note](#shelly-1-gen-4--matter-over-thread) at the top for details on the future Switch variant.
 
 ---
 
@@ -278,7 +276,10 @@ Scan this QR code with the Home app, or enter the setup code manually:
 ```
 Setup code: 3497-011-2332
 ```
- 
+
+ > **Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen-4--matter-over-thread) when one is available.
+
+
 > ⚠️ This is the ESP-Matter SDK test setup code, used by all devices running this firmware. Once a device is commissioned to your Matter fabric, the setup code is no longer used for authentication — your Matter ecosystem manages credentials going forward. Multiple uncommissioned devices broadcasting the same setup code is why the commissioning instructions specify one device at a time.
  
 <details>
@@ -298,7 +299,7 @@ Hold the onboard relay button for **several seconds**. The device will reset and
 ## Known Issues / Roadmap
  
 - [ ] Status LED — onboard LED indication for BLE advertising, Thread connecting, and Thread connected states is not currently functional.
-- [ ] Switch firmware variant — neutral outlet/switch icon instead of light bulb in Matter ecosystems with momentary press options
+- [ ] Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
 - [ ] Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
 
 ---
