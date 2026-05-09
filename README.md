@@ -387,6 +387,11 @@ Open a [GitHub issue](../../issues/new) with:
 
 If your device won't commission, won't boot, or behaves unexpectedly after flashing, serial logs are usually the fastest path to a diagnosis.
 
+Firmware filename convention: automatous-io-{model}-{variant}-{version}.bin
+- {model}: shelly-1-gen4, shelly-1pm-gen4, etc.
+- {variant}: light, switch, dimmer
+- {version}: v1.0.0
+
 ---
 
 ## Why?
