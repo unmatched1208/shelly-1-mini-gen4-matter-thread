@@ -17,7 +17,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 
 > This release is the **Light variant** — Matter `On/Off Light` device type with **latching relay behavior**. The relay holds whatever state you set (on or off) until you change it again. The Shelly appears as a light bulb icon in your smart home app, and the relay can switch any "set and hold" load.
 >
-> **Power-on behavior:** Defaults to **off** at power-up. A configurable power-on state (off, on, restore last state) using the Matter `StartUpOnOff` attribute is planned for a future release. In the meantime, use a smart home automation as a workaround (e.g., HA: "when this device comes online, turn it on").
+> **Power-on behavior:** Defaults to **off** at power-up. Configurable via the Matter StartUpOnOff attribute (off, on, toggle, restore last state) — Home Assistant users can write this attribute directly via Matter cluster editing. Apple Home and Google Home have limited Matter attribute UIs currently, so the firmware default applies in those ecosystems until their Matter attribute UIs improve.
 >
 > A future **Switch variant** will add **momentary relay pulse** behavior for applications that expect a brief contact closure — garage door openers, doorbells, gates, and similar pulse-activated devices. Variants are separate firmware builds because Matter device types are declared at compile time and cannot be changed in the smart home app after commissioning.
 
@@ -62,6 +62,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - ✅ State sync across all controllers
 - ✅ Thread Router mode — extends your Thread mesh network for other devices
 - ✅ Factory reset via long press (onboard relay button)
+- ✅ Configurable power-on behavior via Matter StartUpOnOff attribute
 
 > **Note:** This firmware is best suited for lights, fans, outlets, heaters, and other "set and hold" loads. It is **not** suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure — see the [variant note](#shelly-1-gen-4--matter-over-thread) at the top for details on the future Switch variant.
 
@@ -305,7 +306,6 @@ Hold the onboard relay button for **several seconds**. The device will reset and
  
 ## Known Issues / Roadmap
  
-- [ ] Configurable power-on state — implement Matter `StartUpOnOff` attribute so users can choose default behavior (off, on, restore last state) after power loss. Currently defaults to off.
 - [ ] Status LED — onboard LED indication for BLE advertising, Thread connecting, and Thread connected states is not currently functional.
 - [ ] Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
 - [ ] Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
