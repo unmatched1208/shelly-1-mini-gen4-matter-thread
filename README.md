@@ -1,17 +1,15 @@
 # Shelly 1 Gen4 — Matter over Thread
 
-[![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Release](https://img.shields.io/github/v/release/automatous-io/shelly-1-gen4-matter-thread)](../../releases/latest)
-[![Downloads](https://img.shields.io/github/downloads/automatous-io/shelly-1-gen4-matter-thread/total)](../../releases)
-[![Stars](https://img.shields.io/github/stars/automatous-io/shelly-1-gen4-matter-thread?style=social)](../../stargazers)
+[License: Apache 2.0](https://opensource.org/licenses/Apache-2.0)
+[Release](../../releases/latest)
+[Downloads](../../releases)
+[Stars](../../stargazers)
 
 > **⚠️ Disclaimer.** Flashing third-party firmware modifies your device and may void your warranty. Incorrect flashing can brick your device. Always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems.
 
 Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen4 ships with a thread radio - why not flash firmware that unlocks and uses it?**
 
-<p align="center">
-  <img src="docs/images/apple-home-device-info-v1.0.0.png" alt="Shelly 1 Gen4 running this firmware in Apple Home, showing manufacturer, model, and firmware version" width="300">
-</p>
+
 
 *Shelly 1 Gen4 running v1.0.0 of this firmware, commissioned to Apple Home. Manufacturer: AUTOMATOUS.IO, Model: Shelly 1 Gen4 MoT Light.*
 
@@ -42,7 +40,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 ---
 
 ## Quick Start
- 
+
 **Have a [Thread Border Router](#compatible-hubs), USB-UART adapter and 1.27mm to 2.54mm adapter? Flash and go.**
 
 1. [Download the latest release](../../releases/latest) — grab the `automatous-io-shelly-1-gen4-light-vX.Y.Z.bin` file from the assets.
@@ -53,7 +51,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 ---
 
 ## Features
- 
+
 - ✅ Matter over Thread — no WiFi required
 - ✅ Compatible with Apple Home, Google Home, Alexa, Home Assistant
 - ✅ Multi-fabric — commission to multiple hubs simultaneously
@@ -73,21 +71,31 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 
 > **Requires a Thread Border Router.** A Thread Border Router is required for any Matter-over-Thread device. See the table below for tested and supported options.
 
-| Hub | Thread Border Router | Tested |
-|-----|---------------------|--------|
-| Apple HomePod mini | ✅ | ✅ |
-| Apple HomePod (2nd gen) | ✅ | ✅ |
-| Apple TV 4K (3rd gen) | ✅ | Untested |
-| iPhone 15 Pro + | ✅ | ✅ |
-| Google Nest Hub (2nd gen) | ✅ | Untested |
-| Home Assistant (SkyConnect / Yellow) | ✅ | ✅ |
-| Amazon Echo (4th gen) | ✅ | Untested |
- 
+
+| Hub                                  | Thread Border Router | Tested   |
+| ------------------------------------ | -------------------- | -------- |
+| Apple HomePod mini                   | ✅                    | ✅        |
+| Apple HomePod (2nd gen)              | ✅                    | ✅        |
+| Apple TV 4K (3rd gen)                | ✅                    | Untested |
+| iPhone 15 Pro +                      | ✅                    | ✅        |
+| Google Nest Hub (2nd gen)            | ✅                    | Untested |
+| Home Assistant (SkyConnect / Yellow) | ✅                    | ✅        |
+| Amazon Echo (4th gen)                | ✅                    | Untested |
+
+
 ---
 
 ## Flashing
- 
+
+## Hardware Revision
+
+Tested on Shelly 1 Gen4 hardware revision **v0.1.2** (printed on the PCB). 
+Other revisions should work but have not been verified — if you have a 
+different revision, please [open an issue](../../issues/new) with your 
+findings.
+
 ### What you will need
+
 - Shelly 1 Gen4
 - CP2102 USB-UART adapter
 - 1.27mm 7-pin to 2.54mm Dupont custom cable or adapter board [(see pinout)](#cp2102-to-shelly-wiring)
@@ -100,29 +108,31 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 
 > Full pinout and hardware overview: [Shelly 1 Gen4 Knowledge Base](https://kb.shelly.cloud/knowledge-base/shelly-1-gen4-anz)
 
-| CP2102 | Shelly 1 Gen4 |
-|--------|---------------|
-| N/A | Pin 1 (ESP_DBG_UART) |
-| RXD | Pin 2 (TXD) |
-| TXD | Pin 3 (RXD) |
-| 3.3V | Pin 4 (3.3V)|
-| N/A | Pin 5 (RESET) |
-| N/A | Pin 6 (GPIO0 - BOOT)|
-| GND | Pin 7 (GND) |
+
+| CP2102 | Shelly 1 Gen4        |
+| ------ | -------------------- |
+| N/A    | Pin 1 (ESP_DBG_UART) |
+| RXD    | Pin 2 (TXD)          |
+| TXD    | Pin 3 (RXD)          |
+| 3.3V   | Pin 4 (3.3V)         |
+| N/A    | Pin 5 (RESET)        |
+| N/A    | Pin 6 (GPIO0 - BOOT) |
+| GND    | Pin 7 (GND)          |
+
 
 > The crossover is built into the table above: connect CP2102 RXD to Shelly TXD, and CP2102 TXD to Shelly RXD. If you're wiring this from the CP2102's "TX" and "RX" labels directly to the Shelly's "TX" and "RX" labels without crossing, it will not work.
 
 > **Do not connect the 5V pin.** The Shelly programming header is 3.3V only — applying 5V will likely permanently damage the ESP32-C6 and brick the device. Many CP2102 boards have both 3.3V and 5V pins; verify you are using the 3.3V pin before connecting.
 
-![Shelly 1 Gen4 with Automatous flashing adapter and CP2102 USB-UART](docs/images/shelly1gen4-adapter-and-cp2102.jpg)
+Shelly 1 Gen4 with Automatous flashing adapter and CP2102 USB-UART
 
 *The Shelly 1 Gen4 with the flashing adapter mounted, alongside a CP2102 USB-UART adapter.*
 
-![Adapter mounted on Shelly programming header](docs/images/shelly1gen4-adapter-mounted.jpg)
+Adapter mounted on Shelly programming header
 
 *The 1.27mm-to-2.54mm adapter board seated next to the Shelly's 7-pin programming header.*
 
-![Complete flashing setup with all wires connected](docs/images/shelly1gen4-flash-setup-wired.jpg)
+Complete flashing setup with all wires connected
 
 *Full flashing setup: Shelly's programming header connected to the CP2102 via Dupont wires, with the GPIO0-to-GND jumper visible (white wire) for entering flash mode.*
 
@@ -131,6 +141,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 > ## ⚠️ Safety Warning
 >
 > **Never connect the Shelly to AC mains while flashing.** The programming header is not galvanically isolated from the relay circuitry. Connecting the Shelly to mains voltage AND a USB-UART adapter simultaneously can cause:
+>
 > - Personal electrocution risk
 > - Permanent destruction of the Shelly
 > - Permanent destruction of your computer's USB port (or the entire computer)
@@ -210,12 +221,12 @@ If you want to revert to the original Shelly firmware:
 4. Set flash offset to `0x0`, check **Erase entire flash before writing**, click **Flash**.
 5. Power-cycle the Shelly. It will boot the restored firmware and behave as factory.
 
-<details>
-<summary>Command line flashing with esptool (advanced)</summary>
+Command line flashing with esptool (advanced)
 
 Requires [esptool](https://github.com/espressif/esptool) installed. On macOS/Linux: `pip install esptool`. On Windows: install via pip, or download the standalone binary from the releases page.
 
 Throughout these commands, replace:
+
 - `<PORT>` with your serial port (`/dev/cu.usbserial-XXXX` on macOS, `/dev/ttyUSB0` on Linux, `COM3` on Windows)
 - `<MAC>` with the Shelly's MAC address (read from `chip_id` below)
 - `<VERSION>` with the firmware release version (e.g. `v1.0.0`)
@@ -225,6 +236,7 @@ Put the Shelly into flash mode before each command (GPIO0 bridged to GND, then p
 **Identify the chip and read the MAC address:**
 
 Device information that includes Mac Address:
+
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 chip_id
 ```
@@ -235,20 +247,22 @@ Backup your original firmware:
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
   read_flash 0x0 0x800000 shelly-1-gen4-stock-<MAC>.bin
 ```
+
 This reads the entire 8 MB flash. Verify the resulting file is exactly 8,388,608 bytes before proceeding.
 
 Erase flash:
+
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 erase_flash
 ```
- 
+
 **Flash the Automatous firmware:**
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
   write_flash 0x0 automatous-io-shelly-1-gen4-light-<VERSION>.bin
 ```
- 
+
 **Restore the original firmware:**
 
 ```bash
@@ -257,8 +271,8 @@ esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
 ```
 
 After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot the new firmware.
- 
-</details>
+
+
 
 ---
 
@@ -268,12 +282,14 @@ After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot
 
 Follows Shelly's standard convention — solid LED means connected and working.
 
-| LED Pattern | Meaning |
-|---|---|
-| Off | Device starting up |
+
+| LED Pattern | Meaning                                   |
+| ----------- | ----------------------------------------- |
+| Off         | Device starting up                        |
 | Rapid blink | BLE advertising — ready for commissioning |
-| Slow blink | Joining Thread network |
-| Solid on | Connected and operational |
+| Slow blink  | Joining Thread network                    |
+| Solid on    | Connected and operational                 |
+
 
 ### Before Commissioning
 
@@ -287,7 +303,7 @@ Follows Shelly's standard convention — solid LED means connected and working.
 
 Scan this QR code with the Home app, or enter the setup code manually:
 
-![Matter Setup QR Code](docs/images/matter_qrcode_20202021_3840.png)
+Matter Setup QR Code
 
 1. Open the **Home** app.
 2. Tap **+** → **Add Accessory**.
@@ -299,47 +315,46 @@ Scan this QR code with the Home app, or enter the setup code manually:
 Setup code: 3497-011-2332
 ```
 
- >**Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen4--matter-over-thread) when one is available.
-
+> **Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen4--matter-over-thread) when one is available.
 
 > ⚠️ This is the ESP-Matter SDK test setup code, used by all devices running this firmware. Once a device is commissioned to your Matter fabric, the setup code is no longer used for authentication — your Matter ecosystem manages credentials going forward. Multiple uncommissioned devices broadcasting the same setup code is why the commissioning instructions specify one device at a time.
- 
-<details>
-<summary>Google Home / Alexa / Home Assistant commissioning</summary>
-Google Home and Alexa support Matter commissioning via their respective apps. Use setup code `3497-011-2332` or the QR Code above when prompted. Google and Alexa hubs have not been directly tested but the firmware should work with any Matter-compliant hub. Let me know and we'll update compatible hubs section!
- 
-</details>
+
+Google Home / Alexa / Home Assistant commissioning Google Home and Alexa support Matter commissioning via their respective apps. Use setup code `3497-011-2332` or the QR Code above when prompted. Google and Alexa hubs have not been directly tested but the firmware should work with any Matter-compliant hub. Let me know and we'll update compatible hubs section!
+
+
 
 ---
 
 ## Factory Reset
- 
+
 Hold the onboard relay button for **several seconds**. The device will reset and re-enter BLE commissioning mode. Make sure to remove the device from whatever ecosystems you've added it to.
 
 ---
- 
+
 ## Known Issues / Roadmap
 
-- [ ] OTA updates (exploratory) - Currently users must reflash via USB-UART for updates.
-- [ ] Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
-- [ ] Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
+- OTA updates (exploratory) - Currently users must reflash via USB-UART for updates.
+- Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
+- Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
 
 ---
 
 ## Building from Source
- 
-<details>
-<summary>Build instructions</summary>
- 
+
+Build instructions
+
 Throughout these commands, replace:
+
 - `<VERSION>` with the firmware release version (e.g. `v1.0.0`)
 
 **Requirements:**
+
 - ESP-IDF v5.5.2
 - ESP-Matter (latest)
 - macOS or Linux
 
 Compile and build bin files for flash:
+
 ```bash
 git clone https://github.com/automatous-io/shelly-1-gen4-matter-thread.git
 cd shelly-1-gen4-matter-thread/source/light
@@ -351,6 +366,7 @@ idf.py build
 ```
 
 Merge bin files:
+
 ```bash
 esptool.py --chip esp32c6 merge_bin \
   -o automatous-io-shelly-1-gen4-light-<VERSION>.bin \
@@ -361,14 +377,15 @@ esptool.py --chip esp32c6 merge_bin \
   0x11000 build/ota_data_initial.bin \
   0x20000 build/light.bin
 ```
-</details>
+
+
 
 ---
 
 ## License
- 
+
 Apache 2.0 — see [LICENSE](LICENSE)
- 
+
 Based on the [ESP-Matter](https://github.com/espressif/esp-matter) light example by Espressif Systems, licensed under Apache 2.0.
 
 ---
@@ -401,6 +418,7 @@ Open a [GitHub issue](../../issues/new) with:
 If your device won't commission, won't boot, or behaves unexpectedly after flashing, serial logs are usually the fastest path to a diagnosis.
 
 Firmware filename convention: automatous-io-{model}-{variant}-{version}.bin
+
 - {model}: shelly-1-gen4, shelly-1pm-gen4, etc.
 - {variant}: light, switch, dimmer
 - {version}: v1.0.0
