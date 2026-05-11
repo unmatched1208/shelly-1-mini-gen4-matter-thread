@@ -179,13 +179,9 @@ Based on the [ESP-Matter](https://github.com/espressif/esp-matter) light example
 
 ## Matter and Thread Certification
 
-This firmware is **not** Matter Certified or Thread Certified. It implements the Matter protocol via Espressif's [esp-matter](https://github.com/espressif/esp-matter) SDK and Thread via OpenThread, but has not been submitted to the Connectivity Standards Alliance (CSA) or Thread Group for certification. Certification requires CSA membership ($7,000+/year) and Authorized Test Lab evaluation, which are out of scope for an open-source community project.
+This firmware is **not** Matter Certified or Thread Certified. It uses Espressif's ESP-Matter SDK and OpenThread but has not been submitted to the CSA or Thread Group for certification. During commissioning, expect a one-time "Add Anyway" or similar uncertified device warning — this is normal and expected.
 
-Devices flashed with this firmware will appear in Matter ecosystems as **uncertified Matter devices**. Most ecosystems show a one-time warning during commissioning ("Add Anyway" in Apple Home); this is normal and expected.
-
-This firmware uses the publicly available ESP-Matter test VID/PID and setup code, which is acceptable for personal use and development but cannot be used in commercial certified products.
-
-"Matter" is a trademark of the Connectivity Standards Alliance. "Thread" is a trademark of the Thread Group. "Shelly" is a trademark of Allterco Robotics. This project is not affiliated with, endorsed by, or sponsored by any of these organizations.
+See [docs/CERTIFICATION.md](docs/CERTIFICATION.md) for full details on what uncertified status means, test credentials, and trademark notices.
 
 ---
 
