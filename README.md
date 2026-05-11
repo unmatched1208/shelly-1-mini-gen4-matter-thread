@@ -163,40 +163,9 @@ Hold the onboard relay button for **several seconds**. The device will reset and
 
 ## Building from Source
  
-<details>
-<summary>Build instructions</summary>
- 
-Throughout these commands, replace:
-- `<VERSION>` with the firmware release version (e.g. `v1.0.0`)
+Want to compile your own firmware? See the [Building Guide](docs/BUILDING.md) for setup, build commands, and binary merging.
 
-**Requirements:**
-- ESP-IDF v5.5.2
-- ESP-Matter (latest)
-- macOS or Linux
-
-Compile and build bin files for flash:
-```bash
-git clone https://github.com/automatous-io/shelly-1-gen4-matter-thread.git
-cd shelly-1-gen4-matter-thread/source/light
-# source from wherever you installed esp-idf and esp-matter. I installed in the locations below but yours could be different.
-source ~/esp/esp-idf/export.sh
-source ~/esp/esp-matter/export.sh
-idf.py -DSDKCONFIG_DEFAULTS="sdkconfig.defaults.c6_thread_shelly" set-target esp32c6
-idf.py build
-```
-
-Merge bin files:
-```bash
-esptool.py --chip esp32c6 merge_bin \
-  -o automatous-io-shelly-1-gen4-light-<VERSION>.bin \
-  --flash_mode dio \
-  --flash_size 8MB \
-  0x0     build/bootloader/bootloader.bin \
-  0x10000 build/partition_table/partition-table.bin \
-  0x11000 build/ota_data_initial.bin \
-  0x20000 build/light.bin
-```
-</details>
+Most users don't need to build from source — [download the latest release](../../releases/latest) and skip to [Flashing](#flashing).
 
 ---
 
