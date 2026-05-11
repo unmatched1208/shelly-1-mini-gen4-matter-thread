@@ -149,7 +149,7 @@ Google Home and Alexa support Matter commissioning via their respective apps. Us
 
 ## Factory Reset
  
-Hold the onboard relay button for **several seconds**. The device will reset and re-enter BLE commissioning mode. Make sure to remove the device from whatever ecosystems you've added it to.
+Hold the onboard relay button for **several seconds**. The device will reset and re-enter BLE commissioning mode. The LED will return to the **rapid blink** pattern from the [Status LED Reference](#status-led-reference), confirming the reset worked. Make sure to remove the device from whatever ecosystems you've added it to before re-commissioning.
 
 ---
  
