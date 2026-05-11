@@ -1,0 +1,17 @@
+#pragma once
+
+#include <esp_err.h>
+
+typedef enum {
+    LED_STATE_OFF,                  // LED off (idle, not advertising)
+    LED_STATE_BLE_ADVERTISING,      // Rapid blink — uncommissioned, advertising
+    LED_STATE_THREAD_CONNECTING,    // Slow blink — joining Thread network
+    LED_STATE_THREAD_CONNECTED,     // Solid on — fully operational
+    LED_STATE_FAULT,                // Very rapid blink — error condition
+} led_state_t;
+
+// Initialize the status LED system. Call once during boot.
+esp_err_t status_led_init(void);
+
+// Change the LED state. Safe to call from any task.
+void status_led_set_state(led_state_t state);

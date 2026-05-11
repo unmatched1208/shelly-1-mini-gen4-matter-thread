@@ -33,7 +33,6 @@ extern uint16_t light_endpoint_id;
 #define RELAY_GPIO          GPIO_NUM_5
 #define SWITCH_INPUT_GPIO   GPIO_NUM_10
 #define BUTTON_GPIO         GPIO_NUM_4
-#define STATUS_LED_GPIO     GPIO_NUM_0
 
 // Temperature protection
 #define TEMP_TRIP_CELSIUS   75.0f
@@ -171,21 +170,6 @@ app_driver_handle_t app_driver_light_init()
     };
     gpio_config(&relay_cfg);
     gpio_set_level(RELAY_GPIO, 0);
-
-    // Initialize status LED GPIO — inverted logic
-    // Status LED (GPIO0) — NOT FUNCTIONAL in v1.0, tracked in roadmap.
-    // GPIO0 does not respond to gpio_set_level in current configuration.
-    // Suspect sdkconfig flag conflict; needs investigation.
-    // GPIO config left in place to preserve pin reservation for v1.1 fix.
-    gpio_config_t led_cfg = {
-        .pin_bit_mask = (1ULL << STATUS_LED_GPIO),
-        .mode = GPIO_MODE_OUTPUT,
-        .pull_up_en = GPIO_PULLUP_DISABLE,
-        .pull_down_en = GPIO_PULLDOWN_DISABLE,
-        .intr_type = GPIO_INTR_DISABLE,
-    };
-    gpio_config(&led_cfg);
-    gpio_set_level(STATUS_LED_GPIO, 1);
 
     // Initialize internal temperature sensor
     temperature_sensor_config_t temp_cfg = {

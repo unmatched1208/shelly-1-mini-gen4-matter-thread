@@ -63,6 +63,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen 4. Works natively w
 - ✅ Thread Router mode — extends your Thread mesh network for other devices
 - ✅ Factory reset via long press (onboard relay button)
 - ✅ Configurable power-on behavior via Matter StartUpOnOff attribute
+- ✅ Status LED indication (BLE advertising, Thread connecting, Thread connected)
 
 > **Note:** This firmware is best suited for lights, fans, outlets, heaters, and other "set and hold" loads. It is **not** suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure — see the [variant note](#shelly-1-gen-4--matter-over-thread) at the top for details on the future Switch variant.
 
@@ -263,12 +264,25 @@ After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot
 
 ## Commissioning
 
+### Status LED Reference
+
+Follows Shelly's standard convention — solid LED means connected and working.
+
+| LED Pattern | Meaning |
+|---|---|
+| Off | Device starting up |
+| Rapid blink | BLE advertising — ready for commissioning |
+| Slow blink | Joining Thread network |
+| Solid on | Connected and operational |
+
+### Before Commissioning
+
 - Commission devices ONE AT A TIME.
 - Power off or move away other un-commissioned devices while setting up each one.
 - All devices share the same pairing code, so the controller may get confused if multiple are advertising simultaneously.
 - Once commissioned, each device gets a unique identity on your network.
 - Disconnect UART from the Shelly and install wherever you need to.
- 
+
 ### Apple Home
 
 Scan this QR code with the Home app, or enter the setup code manually:
@@ -305,8 +319,8 @@ Hold the onboard relay button for **several seconds**. The device will reset and
 ---
  
 ## Known Issues / Roadmap
- 
-- [ ] Status LED — onboard LED indication for BLE advertising, Thread connecting, and Thread connected states is not currently functional.
+
+- [ ] OTA updates (exploratory) - Currently users must reflash via USB-UART for updates.
 - [ ] Switch variant — momentary relay pulse (~500ms) for garage door openers, doorbells, gates, and similar pulse-activated devices. Separate firmware build since Matter device types are declared at compile time.
 - [ ] Thermal protection validation — the firmware reads ESP32-C6 die temperature and includes logic to cut off the relay above 75°C, but this has not been validated under controlled thermal conditions. Feature is implemented but not confirmed working as documented.
 

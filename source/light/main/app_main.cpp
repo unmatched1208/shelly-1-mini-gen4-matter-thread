@@ -19,6 +19,7 @@
 
 #include <app_priv.h>
 #include <app_reset.h>
+#include "status_led.h"
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
@@ -67,6 +68,21 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
     case chip::DeviceLayer::DeviceEventType::kInterfaceIpAddressChanged:
         ESP_LOGI(TAG, "Interface IP Address changed");
         break;
+    
+    case chip::DeviceLayer::DeviceEventType::kThreadStateChange:
+        ESP_LOGI(TAG, "Thread state change");
+        if (chip::DeviceLayer::ConnectivityMgr().IsThreadAttached()) {
+            ESP_LOGI(TAG, "Thread is attached");
+            status_led_set_state(LED_STATE_THREAD_CONNECTED);
+        } else {
+            ESP_LOGI(TAG, "Thread is NOT attached");
+            // Only switch to CONNECTING if we're not still advertising
+            // (avoid overwriting the rapid-blink state during initial setup)
+            if (chip::Server::GetInstance().GetFabricTable().FabricCount() > 0) {
+                status_led_set_state(LED_STATE_THREAD_CONNECTING);
+            }
+        }
+        break;
 
     case chip::DeviceLayer::DeviceEventType::kCommissioningComplete:
         ESP_LOGI(TAG, "Commissioning complete");
@@ -88,6 +104,7 @@ static void app_event_cb(const ChipDeviceEvent *event, intptr_t arg)
     case chip::DeviceLayer::DeviceEventType::kCommissioningWindowOpened:
         ESP_LOGI(TAG, "Commissioning window opened");
         MEMORY_PROFILER_DUMP_HEAP_STAT("commissioning window opened");
+        status_led_set_state(LED_STATE_BLE_ADVERTISING);
         break;
 
     case chip::DeviceLayer::DeviceEventType::kCommissioningWindowClosed:
@@ -165,6 +182,9 @@ extern "C" void app_main()
 
     /* Initialize the ESP NVS layer */
     nvs_flash_init();
+
+    /* Initialize status LED */
+    status_led_init();
 
     MEMORY_PROFILER_DUMP_HEAP_STAT("Bootup");
 
