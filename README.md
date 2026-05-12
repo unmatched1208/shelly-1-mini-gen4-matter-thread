@@ -7,7 +7,7 @@
 
 > **⚠️ Disclaimer.** Flashing third-party firmware modifies your device and may void your warranty. Incorrect flashing can brick your device. Always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems.
 
-Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen4 ships with a thread radio - why not flash firmware that unlocks and uses it?**
+Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen4's ESP32-C6 has an 802.15.4 radio used for Zigbee on stock firmware — this firmware reconfigures it to run Thread instead, unlocking Matter over Thread.**
 
 <p align="center">
   <img src="docs/images/apple-home-device-info-v1.0.0.png" alt="Shelly 1 Gen4 running this firmware in Apple Home, showing manufacturer, model, and firmware version" width="300">
@@ -200,7 +200,7 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for bug report
 
 ## Why?
 
-The Shelly 1 Gen4 ships with an ESP32-C6 that includes an 802.15.4 Thread radio. Shelly's stock firmware uses only Matter over WiFi — the Thread radio sits unused. Shelly has stated they have no plans to add Thread support. This firmware unlocks it.
+The Shelly 1 Gen4 ships with an ESP32-C6 that includes an 802.15.4 radio capable of running both Thread and Zigbee. Shelly's stock firmware uses this radio for Zigbee and runs Matter over WiFi — Thread is not used. Shelly has stated they have no plans to add Thread support. This firmware reconfigures the radio to run Thread (OpenThread), unlocking Matter over Thread.
 
 ### Why Matter over Thread, and not ESPHome or Tasmota?
 
