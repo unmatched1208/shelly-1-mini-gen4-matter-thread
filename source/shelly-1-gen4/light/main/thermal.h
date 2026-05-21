@@ -9,7 +9,7 @@
 // background task that polls the temperature every 2 seconds. If the
 // board temperature exceeds 75°C sustained for 10 seconds, the thermal
 // monitor will:
-//   1. Force the relay off (via app_driver_force_relay_off)
+//   1. Drive the relay off (via relay_set(false))
 //   2. Update the Matter OnOff attribute to reflect the off state
 //   3. Set the thermal fault flag, blocking further relay-on commands
 //      until temperature returns to a safe range.

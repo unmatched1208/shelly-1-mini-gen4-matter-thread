@@ -51,7 +51,7 @@ static void switch_input_task(void *arg)
 
             // Toggle the Matter OnOff attribute. The attribute update
             // triggers the standard callback path which drives the
-            // relay GPIO via app_driver_relay_set_power().
+            // the standard callback path which drives the relay via relay_set().
             uint16_t endpoint_id = light_endpoint_id;
             uint32_t cluster_id = OnOff::Id;
             uint32_t attribute_id = OnOff::Attributes::OnOff::Id;

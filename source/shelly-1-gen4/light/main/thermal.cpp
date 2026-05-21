@@ -1,12 +1,19 @@
-#include "thermal.h"
+#include <thermal.h>
+#include <relay.h>
 
 #include <esp_log.h>
 #include <esp_timer.h>
+#include <esp_matter.h>
 #include <driver/temperature_sensor.h>
 #include <freertos/FreeRTOS.h>
 #include <freertos/task.h>
 
-#include <app_priv.h>
+using namespace chip::app::Clusters;
+using namespace esp_matter;
+
+// Defined in app_main.cpp. Used to know which Matter endpoint's OnOff
+// attribute to update on thermal fault.
+extern uint16_t light_endpoint_id;
 
 static const char *TAG = "thermal";
 
@@ -45,12 +52,20 @@ static void thermal_check(void)
         } else {
             int64_t elapsed = (esp_timer_get_time() / 1000) - over_temp_start_ms;
             if (elapsed >= TEMP_SUSTAINED_MS && !fault_active) {
-                ESP_LOGE(TAG, "Thermal fault! Temp: %.1f C - forcing relay off", temp);
+                ESP_LOGE(TAG, "Thermal fault, temp: %.1f C, forcing relay off", temp);
                 fault_active = true;
-                // Belt-and-suspenders: direct GPIO + Matter attribute update.
-                // Implemented in app_driver.cpp as a temporary shim while
-                // relay extraction is pending.
-                app_driver_force_relay_off();
+
+                // Belt-and-suspenders fault response.
+                // 1. Direct hardware: relay_set(false) drives the GPIO low.
+                //    Always succeeds; turn-off is never blocked.
+                // 2. Matter attribute update: so connected ecosystems see
+                //    the state change.
+                relay_set(false);
+
+                uint32_t cluster_id = OnOff::Id;
+                uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
+                esp_matter_attr_val_t val = esp_matter_bool(false);
+                attribute::update(light_endpoint_id, cluster_id, attribute_id, &val);
             }
         }
     } else {
