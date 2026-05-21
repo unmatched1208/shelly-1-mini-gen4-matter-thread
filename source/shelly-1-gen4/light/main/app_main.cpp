@@ -22,6 +22,7 @@
 #include <status_led.h>
 #include <button.h>
 #include <thermal.h>
+#include <switch_input.h>
 #if CHIP_DEVICE_CONFIG_ENABLE_THREAD
 #include <platform/ESP32/OpenthreadLauncher.h>
 #endif
@@ -226,6 +227,7 @@ extern "C" void app_main()
     /* Initialize driver */
     app_driver_handle_t light_handle = app_driver_light_init();
     thermal_init();
+    switch_input_init();
     shelly_button_handle_t button_handle = button_init();
     app_reset_button_register(button_handle);
 
