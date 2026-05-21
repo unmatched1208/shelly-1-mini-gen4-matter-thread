@@ -50,8 +50,7 @@ static void switch_input_task(void *arg)
             while (xQueueReceive(switch_evt_queue, &io_num, 0) == pdTRUE) {}
 
             // Toggle the Matter OnOff attribute. The attribute update
-            // triggers the standard callback path which drives the
-            // the standard callback path which drives the relay via relay_set().
+            // triggers the standard callback path which drives the relay via relay_set().
             uint16_t endpoint_id = light_endpoint_id;
             uint32_t cluster_id = OnOff::Id;
             uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
