@@ -44,6 +44,20 @@ app_driver_handle_t app_driver_light_init();
  */
 esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_t endpoint_id, uint32_t cluster_id,
                                       uint32_t attribute_id, esp_matter_attr_val_t *val);
+/** Force the relay off (thermal fault path).
+ *
+ * Used by the thermal monitor when an overtemp fault is detected. Performs
+ * both a direct GPIO write to ensure the relay physically de-energizes,
+ * and a Matter attribute update so connected ecosystems see the state change.
+ *
+ * This is a temporary shim that lives in app_driver.cpp while the relay
+ * code has not yet been extracted into its own module. When relay
+ * extraction is complete, this function will be removed and callers will
+ * use relay_set(false) instead.
+ *
+ * Safe to call from any task. Does not block.
+ */
+ void app_driver_force_relay_off(void);
 
 /** Set defaults for light driver
  *
