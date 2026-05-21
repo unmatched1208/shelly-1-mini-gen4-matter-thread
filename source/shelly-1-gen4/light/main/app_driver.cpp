@@ -21,7 +21,6 @@
 #include <freertos/task.h>
 #include <freertos/queue.h>
 #include <device.h>
-#include <button_gpio.h>
 
 using namespace chip::app::Clusters;
 using namespace esp_matter;
@@ -32,7 +31,6 @@ extern uint16_t light_endpoint_id;
 // Shelly 1 Gen4 GPIO assignments
 #define RELAY_GPIO          GPIO_NUM_5
 #define SWITCH_INPUT_GPIO   GPIO_NUM_10
-#define BUTTON_GPIO         GPIO_NUM_4
 
 // Temperature protection
 #define TEMP_TRIP_CELSIUS   75.0f
@@ -117,21 +115,6 @@ static void app_driver_switch_task(void *arg)
     }
 }
 
-static void app_driver_button_toggle_cb(void *arg, void *data)
-{
-    ESP_LOGI(TAG, "Toggle button pressed");
-    uint16_t endpoint_id = light_endpoint_id;
-    uint32_t cluster_id = OnOff::Id;
-    uint32_t attribute_id = OnOff::Attributes::OnOff::Id;
-
-    attribute_t *attribute = attribute::get(endpoint_id, cluster_id, attribute_id);
-
-    esp_matter_attr_val_t val = esp_matter_invalid(NULL);
-    attribute::get_val(attribute, &val);
-    val.val.b = !val.val.b;
-    attribute::update(endpoint_id, cluster_id, attribute_id, &val);
-}
-
 esp_err_t app_driver_attribute_update(app_driver_handle_t driver_handle, uint16_t endpoint_id, uint32_t cluster_id,
                                       uint32_t attribute_id, esp_matter_attr_val_t *val)
 {
@@ -214,24 +197,4 @@ app_driver_handle_t app_driver_light_init()
     }
 
     return (app_driver_handle_t)1;
-}
-
-app_driver_handle_t app_driver_button_init()
-{
-    button_handle_t handle = NULL;
-    const button_config_t btn_cfg = {0};
-
-    // Hardcoded GPIO4 for Shelly 1 Gen4 device button
-    const button_gpio_config_t btn_gpio_cfg = {
-        .gpio_num = GPIO_NUM_4,
-        .active_level = 0,
-    };
-
-    if (iot_button_new_gpio_device(&btn_cfg, &btn_gpio_cfg, &handle) != ESP_OK) {
-        ESP_LOGE(TAG, "Failed to create button device");
-        return NULL;
-    }
-
-    iot_button_register_cb(handle, BUTTON_PRESS_DOWN, NULL, app_driver_button_toggle_cb, NULL);
-    return (app_driver_handle_t)handle;
 }
