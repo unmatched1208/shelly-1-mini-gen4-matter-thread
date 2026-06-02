@@ -1,20 +1,20 @@
-# Shelly 1 Gen4 — Matter over Thread
+# Shelly 1 Mini Gen4 — Matter over Thread
 
 [![License: Apache 2.0](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
-[![Release](https://img.shields.io/github/v/release/automatous-io/shelly-1-gen4-matter-thread)](../../releases/latest)
-![Last Commit](https://img.shields.io/github/last-commit/automatous-io/shelly-1-gen4-matter-thread)
-[![Downloads](https://img.shields.io/github/downloads/automatous-io/shelly-1-gen4-matter-thread/total)](../../releases)
-[![Stars](https://img.shields.io/github/stars/automatous-io/shelly-1-gen4-matter-thread?style=social)](../../stargazers)
+[![Release](https://img.shields.io/github/v/release/unmatched1208/shelly-1-mini-gen4-matter-thread)](../../releases/latest)
+![Last Commit](https://img.shields.io/github/last-commit/unmatched1208/shelly-1-mini-gen4-matter-thread)
+[![Downloads](https://img.shields.io/github/downloads/unmatched1208/shelly-1-mini-gen4-matter-thread/total)](../../releases)
+[![Stars](https://img.shields.io/github/stars/unmatched1208/shelly-1-mini-gen4-matter-thread?style=social)](../../stargazers)
 
 > **⚠️ Disclaimer.** Flashing third-party firmware modifies your device and may void your warranty. Incorrect flashing can brick your device. Always back up your original firmware before proceeding. You assume all responsibility for any damage, data loss, or device failure. This project is not affiliated with Shelly, Allterco Robotics, CSA, or Espressif Systems.
 
-Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Gen4's ESP32-C6 has an 802.15.4 radio used for Zigbee on stock firmware — this firmware reconfigures it to run Thread instead, unlocking Matter over Thread.**
+Open source Matter over Thread firmware for the Shelly 1 Mini Gen4. Works natively with Apple Home, Google Home, Alexa, and Home Assistant — no WiFi, no cloud, no Shelly app, no subscription. **The Mini Gen4's ESP32-C6 has an 802.15.4 radio used for Zigbee on stock firmware — this firmware reconfigures it to run Thread instead, unlocking Matter over Thread.**
 
 <p align="center">
-  <img src="docs/images/apple-home-device-info-v1.0.0.png" alt="Shelly 1 Gen4 running this firmware in Apple Home, showing manufacturer, model, and firmware version" width="300">
+  <img src="docs/images/apple-home-device-info-v1.0.0.png" alt="Shelly 1 Mini Gen4 running this firmware in Apple Home, showing manufacturer, model, and firmware version" width="300">
 </p>
 
-*Shelly 1 Gen4 running v1.0.0 of this firmware, commissioned to Apple Home. Manufacturer: AUTOMATOUS.IO, Model: Shelly 1 Gen4 MoT Light.*
+*Shelly 1 Mini Gen4 running v1.0.0 of this firmware, commissioned to Apple Home. Manufacturer: AUTOMATOUS.IO, Model: Shelly 1 Mini Gen4 MoT Light.*
 
 > This release is the **Light variant** — Matter `On/Off Light` device type with **latching relay behavior**. The relay holds whatever state you set (on or off) until you change it again. The Shelly appears as a light bulb icon in your smart home app, and the relay can switch any "set and hold" load.
 >
@@ -50,7 +50,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
  
 **Have a [Thread Border Router](#compatible-hubs), USB-UART adapter and 1.27mm to 2.54mm adapter? Flash and go.**
 
-1. [Download the latest release](../../releases/latest) — grab the `automatous-io-shelly-1-gen4-light-vX.Y.Z.bin` file from the assets.
+1. [Download the latest release](../../releases/latest) — grab the `shelly-1-mini-gen4-light-vX.Y.Z.bin` file from the assets.
 2. [Enter flash mode](docs/FLASHING.md#enter-flash-mode) on your Shelly.
 3. [Back up your original firmware](docs/FLASHING.md#2-back-up-the-original-shelly-firmware) and flash the latest release with [ESPConnect](docs/FLASHING.md#flash-with-espconnect).
 4. [Commission](#commissioning) with your smart home app.
@@ -71,7 +71,7 @@ Open source Matter over Thread firmware for the Shelly 1 Gen4. Works natively wi
 - ✅ Status LED indication (BLE advertising, Thread connecting, Thread connected)
 - ✅ Blink LED on command from any Matter controller using **Identify** for physical device identification
 
-> **Note:** This firmware is best suited for lights, fans, outlets, heaters, and other "set and hold" loads. It is **not** suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure — see the [variant note](#shelly-1-gen4--matter-over-thread) at the top for details on the future Switch variant.
+> **Note:** This firmware is best suited for lights, fans, outlets, heaters, and other "set and hold" loads. It is **not** suitable for garage door openers, doorbells, gates, or any device that expects a brief contact closure — see the [variant note](#shelly-1-mini-gen4--matter-over-thread) at the top for details on the future Switch variant.
 
 ---
 
@@ -169,7 +169,7 @@ Scan the QR code above with the Home app, or enter the setup code manually:
 5. Name the device and place it in a room.
 
 
- >**Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-gen4--matter-over-thread) when one is available.
+ >**Note for users coming from HomeKit Bridge / Home Assistant setups:** HomeKit's "reclassify as Fan / Light / Switch" option (available when bridging a stock Shelly through Home Assistant) is not available with native Matter devices. The Matter device type is declared by the firmware at flash time and cannot be changed in the Apple Home app. If you need a different device type, flash the corresponding [variant](#shelly-1-mini-gen4--matter-over-thread) when one is available.
 
 
 > ⚠️ This is the ESP-Matter SDK test setup code, used by all devices running this firmware. Once a device is commissioned to your Matter fabric, the setup code is no longer used for authentication — your Matter ecosystem manages credentials going forward. Multiple uncommissioned devices broadcasting the same setup code is why the commissioning instructions specify one device at a time.
@@ -211,7 +211,7 @@ Hold the onboard relay button for **several seconds**. The device will reset and
 
 ## Roadmap Input
 
-Have a firmware variant or feature you'd like to see prioritized? [Vote on the roadmap discussion](https://github.com/automatous-io/shelly-1-gen4-matter-thread/discussions) or open an issue with your use case.
+Have a firmware variant or feature you'd like to see prioritized? [Vote on the roadmap discussion](https://github.com/unmatched1208/shelly-1-mini-gen4-matter-thread/discussions) or open an issue with your use case.
 
 ---
 
@@ -247,7 +247,7 @@ Contributions are welcome. See [CONTRIBUTING.md](CONTRIBUTING.md) for bug report
 
 ## Why?
 
-The Shelly 1 Gen4 ships with an ESP32-C6 that includes an 802.15.4 radio capable of running both Thread and Zigbee. Shelly's stock firmware uses this radio for Zigbee and runs Matter over WiFi — Thread is not used. Shelly has stated they have no plans to add Thread support. This firmware reconfigures the radio to run Thread (OpenThread), unlocking Matter over Thread.
+The Shelly 1 Mini Gen4 ships with an ESP32-C6 that includes an 802.15.4 radio capable of running both Thread and Zigbee. Shelly's stock firmware uses this radio for Zigbee and runs Matter over WiFi — Thread is not used. Shelly has stated they have no plans to add Thread support. This firmware reconfigures the radio to run Thread (OpenThread), unlocking Matter over Thread.
 
 ### Why Matter over Thread, and not ESPHome or Tasmota?
 
@@ -281,4 +281,4 @@ This firmware was created from inside an old Mercedes Sprinter T1N named Mabel, 
 
 I put many sleepless nights obsessing about Thread support that kickstarted me into writing custom firmware and testing using ESP-IDF, ESP-Matter, and ESPHome examples — figuring out Shelly's custom partition offsets, GPIO quirks specific to this device, and getting Matter over Thread commissioning working on non-devkit hardware.
 
-If it saved you the same headache, consider leaving a ⭐ on the repo — it helps the project show up in GitHub search and signals to other Shelly 1 Gen4 owners that this firmware exists and works.
+If it saved you the same headache, consider leaving a ⭐ on the repo — it helps the project show up in GitHub search and signals to other Shelly 1 Mini Gen4 owners that this firmware exists and works.

@@ -34,7 +34,7 @@ The repository organizes firmware by product and variant:
 
 ```
 source/
-└── shelly-1-gen4/
+└── shelly-1-mini-gen4/
     ├── light/           # Matter On/Off Light (latching relay)
     ├── light-switch/    # Matter On/Off Light Switch (planned, contributor expressed interest)
     └── switch/          # Matter On/Off with momentary pulse (planned)
@@ -60,8 +60,8 @@ This project assumes you have both SDKs installed and configured for ESP32-C6 ta
 Clone the repository and build the light variant:
 
 ```bash
-git clone https://github.com/automatous-io/shelly-1-gen4-matter-thread.git
-cd shelly-1-gen4-matter-thread/source/shelly-1-gen4/light
+git clone https://github.com/unmatched1208/shelly-1-mini-gen4-matter-thread.git
+cd shelly-1-mini-gen4-matter-thread/source/shelly-1-mini-gen4/light
 
 # source from wherever you installed esp-idf and esp-matter
 # the locations below are examples — adjust to match your install paths
@@ -82,7 +82,7 @@ To create a single combined `.bin` file suitable for flashing at offset `0x0` (m
 
 ```bash
 esptool.py --chip esp32c6 merge_bin \
-  -o automatous-io-shelly-1-gen4-light-<VERSION>.bin \
+  -o shelly-1-mini-gen4-light-<VERSION>.bin \
   --flash_mode dio \
   --flash_size 8MB \
   0x0     build/bootloader/bootloader.bin \

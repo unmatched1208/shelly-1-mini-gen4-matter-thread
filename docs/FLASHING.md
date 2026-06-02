@@ -2,7 +2,7 @@
 
 [← Back to README](../README.md) · [Report an issue](../../../issues/new)
 
-This guide covers flashing the Automatous Matter over Thread firmware onto a Shelly 1 Gen4. The full process takes about 15 minutes: 5 minutes to wire up, 5–10 minutes to back up the original firmware, and 1–2 minutes to flash the new firmware.
+This guide covers flashing the Automatous Matter over Thread firmware onto a Shelly 1 Mini Gen4. The full process takes about 15 minutes: 5 minutes to wire up, 5–10 minutes to back up the original firmware, and 1–2 minutes to flash the new firmware.
 
 ---
 
@@ -33,11 +33,11 @@ This guide covers flashing the Automatous Matter over Thread firmware onto a She
 
 ## Hardware Revision
 
-Tested on Shelly 1 Gen4 hardware revision **v0.1.2** (printed on the PCB). Other revisions should work but have not been verified — if you have a different revision, please [open an issue](../../../issues/new) with your findings.
+Tested on Shelly 1 Mini Gen4 hardware revision **v0.1.0** (printed on the PCB). Other revisions should work but have not been verified — if you have a different revision, please [open an issue](../../../issues/new) with your findings.
 
  
 ## What you will need
-- Shelly 1 Gen4
+- Shelly 1 Mini Gen4
 - CP2102 USB-UART adapter
 - 1.27mm 7-pin to 2.54mm Dupont custom cable or adapter board [(see pinout)](#cp2102-to-shelly-wiring)
 - Chrome, Edge, or any Chromium-based browser (for Web Serial) or esptool via CLI
@@ -47,9 +47,9 @@ Tested on Shelly 1 Gen4 hardware revision **v0.1.2** (printed on the PCB). Other
 
 ## CP2102 to Shelly Wiring
 
-> Full pinout and hardware overview: [Shelly 1 Gen4 Knowledge Base](https://kb.shelly.cloud/knowledge-base/shelly-1-gen4-anz)
+> Full pinout and hardware overview: [Shelly 1 Mini Gen4 Knowledge Base](https://kb.shelly.cloud/knowledge-base/shelly-1-mini-gen4)
 
-| CP2102 | Shelly 1 Gen4 |
+| CP2102 | Shelly 1 Mini Gen4 |
 |--------|---------------|
 | N/A | Pin 1 (ESP_DBG_UART) |
 | RXD | Pin 2 (TXD) |
@@ -63,15 +63,15 @@ Tested on Shelly 1 Gen4 hardware revision **v0.1.2** (printed on the PCB). Other
 
 > **Do not connect the 5V pin.** The Shelly programming header is 3.3V only — applying 5V will likely permanently damage the ESP32-C6 and brick the device. Many CP2102 boards have both 3.3V and 5V pins; verify you are using the 3.3V pin before connecting.
 
-![Shelly 1 Gen4 with Automatous flashing adapter and CP2102 USB-UART](images/shelly1gen4-adapter-and-cp2102.jpg)
+![Shelly 1 Mini Gen4 with Automatous flashing adapter and CP2102 USB-UART](images/shelly1minigen4-adapter-and-cp2102.jpg)
 
-*The Shelly 1 Gen4 with the flashing adapter mounted, alongside a CP2102 USB-UART adapter.*
+*The Shelly 1 Mini Gen4 with the flashing adapter mounted, alongside a CP2102 USB-UART adapter.*
 
-![Adapter mounted on Shelly programming header](images/shelly1gen4-adapter-mounted.jpg)
+![Adapter mounted on Shelly programming header](images/shelly1minigen4-adapter-mounted.jpg)
 
 *The 1.27mm-to-2.54mm adapter board seated next to the Shelly's 7-pin programming header.*
 
-![Complete flashing setup with all wires connected](images/shelly1gen4-flash-setup-wired.jpg)
+![Complete flashing setup with all wires connected](images/shelly1minigen4-flash-setup-wired.jpg)
 
 *Full flashing setup: Shelly's programming header connected to the CP2102 via Dupont wires, with the GPIO0-to-GND jumper visible (white wire) for entering flash mode.*
 
@@ -103,7 +103,7 @@ ESPConnect is a browser-based ESP32 flashing tool built on Web Serial. No instal
 1. In the left navigation, click **Flash Tools**.
 2. Click **Download Flash Backup**.
 3. ESPConnect will read the entire 8MB flash and download it as a `.bin` file. This takes 5–10 minutes at 115200 baud — do not disconnect or close the browser during the read.
-4. Rename the downloaded file to include the device's MAC address, e.g. `shelly-1-gen4-stock-AABBCCDDEEFF.bin`.
+4. Rename the downloaded file to include the device's MAC address, e.g. `shelly-1-mini-gen4-stock-AABBCCDDEEFF.bin`.
 5. **Verify the file size is approximately 8 MB (8,388,608 bytes).** A smaller file means the read was incomplete or interrupted; redo the backup before proceeding.
 6. Store the backup somewhere safe. If you are flashing multiple Shellies, keep each MAC-labeled backup separate — they should not be interchanged.
 
@@ -174,7 +174,7 @@ Backup your original firmware:
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  read_flash 0x0 0x800000 shelly-1-gen4-stock-<MAC>.bin
+  read_flash 0x0 0x800000 shelly-1-mini-gen4-stock-<MAC>.bin
 ```
 This reads the entire 8 MB flash. Verify the resulting file is exactly 8,388,608 bytes before proceeding.
 
@@ -187,14 +187,14 @@ esptool.py --chip esp32c6 --port <PORT> --baud 115200 erase_flash
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  write_flash 0x0 automatous-io-shelly-1-gen4-light-<VERSION>.bin
+  write_flash 0x0 shelly-1-mini-gen4-light-<VERSION>.bin
 ```
  
 **Restore the original firmware:**
 
 ```bash
 esptool.py --chip esp32c6 --port <PORT> --baud 115200 \
-  write_flash 0x0 shelly-1-gen4-stock-<MAC>.bin
+  write_flash 0x0 shelly-1-mini-gen4-stock-<MAC>.bin
 ```
 
 After flashing, remove the GPIO0–GND bridge and power-cycle the Shelly to boot the new firmware.
