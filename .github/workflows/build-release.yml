@@ -1,0 +1,154 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+  workflow_dispatch:
+    inputs:
+      version:
+        description: 'Release version (e.g. v1.2.0)'
+        required: true
+        default: 'v1.2.0'
+
+env:
+  IDF_VERSION: v5.3.2
+  ESP_MATTER_REF: main
+  TARGET: esp32c6
+
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install system dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            git wget curl flex bison gperf \
+            python3 python3-pip python3-venv python3-setuptools \
+            cmake ninja-build ccache \
+            libffi-dev libssl-dev libusb-1.0-0 \
+            dfu-util
+
+      - name: Cache ESP-IDF tools
+        uses: actions/cache@v4
+        with:
+          path: ~/.espressif
+          key: espressif-tools-${{ env.IDF_VERSION }}-${{ env.TARGET }}
+
+      - name: Install ESP-IDF
+        run: |
+          git clone --depth 1 --branch ${{ env.IDF_VERSION }} \
+            https://github.com/espressif/esp-idf.git $HOME/esp-idf
+          $HOME/esp-idf/install.sh ${{ env.TARGET }}
+
+      - name: Cache ESP-Matter (connectedhomeip bootstrap)
+        id: cache-esp-matter
+        uses: actions/cache@v4
+        with:
+          path: $HOME/esp-matter
+          key: esp-matter-${{ env.ESP_MATTER_REF }}-idf-${{ env.IDF_VERSION }}-v2
+          restore-keys: |
+            esp-matter-${{ env.ESP_MATTER_REF }}-idf-${{ env.IDF_VERSION }}-
+
+      - name: Clone ESP-Matter
+        if: steps.cache-esp-matter.outputs.cache-hit != 'true'
+        run: |
+          git clone --depth 1 \
+            https://github.com/espressif/esp-matter.git $HOME/esp-matter
+          cd $HOME/esp-matter
+          git submodule update --init --depth 1 \
+            connectedhomeip/connectedhomeip \
+            components/esp_matter \
+            components/esp_matter_console \
+            components/esp_matter_ota
+          cd connectedhomeip/connectedhomeip
+          git submodule update --init --depth 1 \
+            third_party/jsoncpp/repo \
+            third_party/nlunit-test/repo \
+            third_party/nlio/repo \
+            third_party/nlfaultinjection/repo \
+            third_party/mbedtls/repo \
+            third_party/boringssl/src \
+            third_party/pigweed/repo
+
+      - name: Bootstrap ESP-Matter
+        if: steps.cache-esp-matter.outputs.cache-hit != 'true'
+        run: |
+          source $HOME/esp-idf/export.sh
+          cd $HOME/esp-matter
+          bash install.sh
+
+      - name: Determine version
+        id: version
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "version=${{ github.event.inputs.version }}" >> $GITHUB_OUTPUT
+          else
+            echo "version=${{ github.ref_name }}" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Build firmware
+        run: |
+          source $HOME/esp-idf/export.sh
+          source $HOME/esp-matter/export.sh
+          cd source/shelly-1-mini-gen4/light
+          idf.py \
+            -DSDKCONFIG_DEFAULTS="sdkconfig.defaults;sdkconfig.defaults.c6_thread_shelly" \
+            set-target ${{ env.TARGET }}
+          idf.py build
+
+      - name: Merge binary
+        run: |
+          source $HOME/esp-idf/export.sh
+          VERSION=${{ steps.version.outputs.version }}
+          OUTFILE="shelly-1-mini-gen4-light-${VERSION}.bin"
+          cd source/shelly-1-mini-gen4/light
+          esptool.py --chip esp32c6 merge_bin \
+            -o "${OUTFILE}" \
+            --flash_mode dio \
+            --flash_size 8MB \
+            0x0     build/bootloader/bootloader.bin \
+            0x10000 build/partition_table/partition-table.bin \
+            0x11000 build/ota_data_initial.bin \
+            0x20000 build/light.bin
+          echo "BINARY=source/shelly-1-mini-gen4/light/${OUTFILE}" >> $GITHUB_ENV
+          echo "Binary created: ${OUTFILE} ($(du -h source/shelly-1-mini-gen4/light/${OUTFILE} | cut -f1))"
+
+      - name: Upload binary as artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: firmware-${{ steps.version.outputs.version }}
+          path: ${{ env.BINARY }}
+          retention-days: 90
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ steps.version.outputs.version }}
+          name: ${{ steps.version.outputs.version }}
+          body: |
+            ## Shelly 1 Mini Gen4 — Matter over Thread ${{ steps.version.outputs.version }}
+
+            Ported from [automatous-io/shelly-1-gen4-matter-thread](https://github.com/automatous-io/shelly-1-gen4-matter-thread) for the **Shelly 1 Mini Gen4 (S4SW-001X8EU)**.
+
+            ### Flashing
+
+            Download `shelly-1-mini-gen4-light-${{ steps.version.outputs.version }}.bin` and flash at offset `0x0`.
+            See [docs/FLASHING.md](docs/FLASHING.md) for full instructions.
+
+            ### GPIO mapping (Shelly 1 Mini Gen4)
+
+            | Function | GPIO |
+            |---|---|
+            | Relay | GPIO5, active-high |
+            | Button | GPIO4, active-low |
+            | Switch input | GPIO10 |
+            | Status LED | GPIO0, active-low |
+          files: ${{ env.BINARY }}
+          draft: false
+          prerelease: false
