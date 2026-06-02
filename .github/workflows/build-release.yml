@@ -13,8 +13,8 @@ on:
 
 env:
   IDF_VERSION: v5.3.2
-  ESP_MATTER_REF: main
   TARGET: esp32c6
+  FORCE_JAVASCRIPT_ACTIONS_TO_NODE24: true
 
 jobs:
   build:
@@ -46,14 +46,12 @@ jobs:
             https://github.com/espressif/esp-idf.git $HOME/esp-idf
           $HOME/esp-idf/install.sh ${{ env.TARGET }}
 
-      - name: Cache ESP-Matter (connectedhomeip bootstrap)
+      - name: Cache ESP-Matter bootstrap
         id: cache-esp-matter
         uses: actions/cache@v4
         with:
           path: $HOME/esp-matter
-          key: esp-matter-${{ env.ESP_MATTER_REF }}-idf-${{ env.IDF_VERSION }}-v2
-          restore-keys: |
-            esp-matter-${{ env.ESP_MATTER_REF }}-idf-${{ env.IDF_VERSION }}-
+          key: esp-matter-main-idf-${{ env.IDF_VERSION }}-v3
 
       - name: Clone ESP-Matter
         if: steps.cache-esp-matter.outputs.cache-hit != 'true'
@@ -61,27 +59,16 @@ jobs:
           git clone --depth 1 \
             https://github.com/espressif/esp-matter.git $HOME/esp-matter
           cd $HOME/esp-matter
-          git submodule update --init --depth 1 \
-            connectedhomeip/connectedhomeip \
-            components/esp_matter \
-            components/esp_matter_console \
-            components/esp_matter_ota
-          cd connectedhomeip/connectedhomeip
-          git submodule update --init --depth 1 \
-            third_party/jsoncpp/repo \
-            third_party/nlunit-test/repo \
-            third_party/nlio/repo \
-            third_party/nlfaultinjection/repo \
-            third_party/mbedtls/repo \
-            third_party/boringssl/src \
-            third_party/pigweed/repo
+          # esp-matter has exactly one submodule: connectedhomeip/connectedhomeip
+          git submodule update --init --depth 1 connectedhomeip/connectedhomeip
 
       - name: Bootstrap ESP-Matter
         if: steps.cache-esp-matter.outputs.cache-hit != 'true'
         run: |
           source $HOME/esp-idf/export.sh
           cd $HOME/esp-matter
-          bash install.sh
+          # --no-host-tool skips building chip-tool/chip-cert (not needed for firmware)
+          bash install.sh --no-host-tool
 
       - name: Determine version
         id: version
@@ -117,7 +104,7 @@ jobs:
             0x11000 build/ota_data_initial.bin \
             0x20000 build/light.bin
           echo "BINARY=source/shelly-1-mini-gen4/light/${OUTFILE}" >> $GITHUB_ENV
-          echo "Binary created: ${OUTFILE} ($(du -h source/shelly-1-mini-gen4/light/${OUTFILE} | cut -f1))"
+          echo "Binary size: $(du -h source/shelly-1-mini-gen4/light/${OUTFILE} | cut -f1)"
 
       - name: Upload binary as artifact
         uses: actions/upload-artifact@v4
