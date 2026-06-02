@@ -61,6 +61,10 @@ jobs:
             https://github.com/espressif/esp-matter.git $HOME/esp-matter
           cd $HOME/esp-matter
           git submodule update --init --depth 1 connectedhomeip/connectedhomeip
+          # Init all direct submodules of connectedhomeip so bootstrap.sh
+          # integrity checks pass (it fails if any submodule shows "has changes")
+          cd connectedhomeip/connectedhomeip
+          git submodule update --init --depth 1
 
       - name: Bootstrap ESP-Matter
         if: steps.cache-esp-matter.outputs.cache-hit != 'true'
